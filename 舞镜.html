@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>舞镜 DanceMirror · 专业扒舞器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 10% 20%, #0a0f1e, #03060c);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 1.5rem;
+            color: #F3F4F6;
+        }
+
+        .glass-panel {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(12, 18, 28, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 200, 120, 0.25);
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 头部区域 */
+        .hero-area {
+            padding: 1.5rem 2rem 1rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .hero-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(120deg, #FFE6B0, #FFB347);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 0.4rem;
+        }
+        .hero-desc {
+            color: #cbd5e6;
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
+            letter-spacing: 0.3px;
+        }
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .upload-group, .camera-group {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            border-radius: 1.2rem;
+            padding: 0.5rem 1rem;
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            align-items: center;
+            border: 1px solid rgba(255, 200, 100, 0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .file-label {
+            background: linear-gradient(105deg, #FF8C42, #FF5E7E);
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #0A0F1E;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: 0.2s;
+        }
+        .file-label:hover { transform: scale(1.02); filter: brightness(1.05); }
+        input[type="file"] { display: none; }
+        .video-name {
+            font-size: 0.8rem;
+            color: #FCD34D;
+            background: #1E293B;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+        .upload-hint {
+            font-size: 0.7rem;
+            color: #9CA3AF;
+            margin-left: 4px;
+        }
+
+        /* 通用按钮 */
+        .btn {
+            background: linear-gradient(95deg, #2c3e66, #1f2a46);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .btn-primary {
+            background: linear-gradient(95deg, #FF7B2C, #FF3A5E);
+            box-shadow: 0 4px 12px rgba(255, 50, 80, 0.35);
+        }
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 0.75rem;
+        }
+        .btn-icon {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        /* 滑块 */
+        .slider {
+            width: 110px;
+            height: 5px;
+            border-radius: 10px;
+            background: #FFB347;
+            -webkit-appearance: none;
+        }
+        .slider:focus { outline: none; }
+        .slider::-webkit-slider-thumb {
+            width: 15px;
+            height: 15px;
+            background: #FFE484;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 6px #FFB347;
+        }
+
+        .value-badge {
+            background: #1E293B;
+            padding: 4px 10px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* 视频区域 */
+        .video-area {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 1.2rem;
+            padding: 1.2rem;
+        }
+        .video-card {
+            background: #00000088;
+            border-radius: 1.5rem;
+            padding: 0.6rem;
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+        }
+        .video-card h3 {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #FFD966;
+            font-weight: 600;
+        }
+        .video-wrapper {
+            position: relative;
+            background: #000;
+            border-radius: 1rem;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #0F0F0F;
+        }
+        #cameraVideo { transform: scaleX(-1); }
+
+        /* 进度条区域（含播放按钮） */
+        .progress-area {
+            padding: 0.6rem 1.2rem 0.8rem 1.2rem;
+        }
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            background: rgba(0,0,0,0.3);
+            border-radius: 60px;
+            padding: 0.3rem 0.8rem;
+        }
+        .play-pause-btn {
+            background: #FF8C42;
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            color: #0A0F1E;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        .play-pause-btn:hover {
+            transform: scale(1.05);
+            background: #ffa25e;
+        }
+        .custom-progress {
+            flex: 1;
+            position: relative;
+            height: 32px;
+            display: flex;
+            align-items: center;
+        }
+        .progress-track {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+            position: relative;
+            cursor: pointer;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #FF8C42;
+            border-radius: 6px;
+            width: 0%;
+            box-shadow: 0 0 4px #FF8C42;
+        }
+        .progress-thumb {
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            left: 0%;
+            cursor: pointer;
+            z-index: 3;
+            box-shadow: 0 0 6px rgba(0,0,0,0.5);
+        }
+        .loop-marker {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            z-index: 4;
+            pointer-events: none;
+        }
+        .loop-marker-start { background: #22C55E; box-shadow: 0 0 0 2px #0F172A; }
+        .loop-marker-end { background: #EF4444; box-shadow: 0 0 0 2px #0F172A; }
+        .time-display {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #e2e8f0;
+            align-items: center;
+            background: #00000055;
+            padding: 4px 10px;
+            border-radius: 40px;
+        }
+        .restart-icon {
+            background: rgba(255,255,255,0.12);
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #FFD966;
+            transition: 0.2s;
+        }
+        .restart-icon:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            transform: rotate(15deg);
+        }
+
+        /* 底部控制栏 */
+        .bottom-controls {
+            padding: 0.8rem 1.2rem;
+            background: rgba(0, 0, 0, 0.45);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .ctrl-group {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            border-radius: 1.2rem;
+            padding: 0.4rem 0.9rem;
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            align-items: center;
+            border: 1px solid rgba(255, 200, 100, 0.3);
+        }
+        .group-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #FFD966;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 10px;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+        }
+        .loop-status {
+            background: #00000066;
+            padding: 4px 10px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        .tip-text {
+            font-size: 0.65rem;
+            color: #FFD966;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 10px;
+            border-radius: 40px;
+            margin-left: 4px;
+            white-space: nowrap;
+        }
+        @media (max-width: 860px) {
+            .video-area { grid-template-columns: 1fr; }
+            .bottom-controls { flex-direction: column; align-items: stretch; }
+            .ctrl-group { justify-content: space-between; }
+            .tip-text { white-space: normal; }
+            .progress-container { flex-wrap: wrap; }
+            .hero-title { font-size: 1.5rem; }
+        }
+        footer {
+            text-align: center;
+            padding: 0.8rem;
+            font-size: 0.7rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #8b9bb0;
+        }
+    </style>
+</head>
+<body>
+<div class="glass-panel">
+    <!-- 头部区域 -->
+    <div class="hero-area">
+        <div class="hero-title">🪞 舞镜 · DanceMirror</div>
+        <div class="hero-desc">上传舞蹈视频 → 自由标记循环区间 | 调速/镜像/旋转/缩放 | 摄像头实时跟跳</div>
+        <div class="top-actions">
+            <div class="upload-group">
+                <label class="file-label">
+                    📂 上传舞蹈视频
+                    <input type="file" id="videoUpload" accept="video/mp4,video/quicktime,video/webm">
+                </label>
+                <span class="upload-hint">MP4 / MOV / WebM</span>
+                <span id="fileNameDisplay" class="video-name">未选择</span>
+            </div>
+            <div class="camera-group">
+                <span class="group-title">📷 跟跳</span>
+                <button id="enableCameraBtn" class="btn btn-primary btn-sm">开摄像头</button>
+                <button id="mirrorCameraBtn" class="btn btn-sm">镜头镜像</button>
+                <button id="disableCameraBtn" class="btn btn-sm">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频区域 -->
+    <div class="video-area">
+        <div class="video-card">
+            <h3>📺 参考舞蹈</h3>
+            <div class="video-wrapper">
+                <video id="danceVideo" playsinline></video>
+            </div>
+        </div>
+        <div class="video-card" id="cameraCard" style="display: none;">
+            <h3>🤳 你的跟跳</h3>
+            <div class="video-wrapper">
+                <video id="cameraVideo" playsinline autoplay muted></video>
+            </div>
+        </div>
+    </div>
+
+    <!-- 进度条区域（整合播放/暂停和重头） -->
+    <div class="progress-area">
+        <div class="progress-container">
+            <button id="playPauseBtn" class="play-pause-btn">▶</button>
+            <div class="custom-progress" id="progressContainer">
+                <div class="progress-track" id="progressTrack">
+                    <div class="progress-fill" id="progressFill"></div>
+                    <div class="progress-thumb" id="progressThumb"></div>
+                    <div id="loopMarkerStart" class="loop-marker loop-marker-start" style="display: none;"></div>
+                    <div id="loopMarkerEnd" class="loop-marker loop-marker-end" style="display: none;"></div>
+                </div>
+            </div>
+            <div class="time-display">
+                <span id="currentTimeLabel">0:00</span>
+                <span>/</span>
+                <span id="durationLabel">0:00</span>
+            </div>
+            <button id="restartBtn" class="restart-icon" title="重头播放">↺</button>
+        </div>
+    </div>
+
+    <!-- 底部控制栏 -->
+    <div class="bottom-controls">
+        <!-- 速度 + 音量 -->
+        <div class="ctrl-group">
+            <span class="group-title">⏩ 速度</span>
+            <input type="range" id="speedSlider" class="slider" min="0.1" max="2.0" step="0.01" value="1.0">
+            <span id="speedLabel" class="value-badge">1.00x</span>
+            <span class="group-title">🔊 音量</span>
+            <input type="range" id="volumeSlider" class="slider" min="0" max="1" step="0.01" value="1.0">
+            <span id="volumeLabel" class="value-badge">100%</span>
+        </div>
+        <!-- 画面设置 -->
+        <div class="ctrl-group">
+            <span class="group-title">🎬 画面</span>
+            <button id="mirrorBtn" class="btn btn-sm">🪞 镜像</button>
+            <button id="resetMirrorBtn" class="btn btn-sm">重置</button>
+            <button id="rotateLeftBtn" class="btn btn-sm">↩️ 左转</button>
+            <button id="rotateRightBtn" class="btn btn-sm">↪️ 右转</button>
+            <button id="resetRotateBtn" class="btn btn-sm">⟳ 重置</button>
+            <span>🔍</span>
+            <input type="range" id="scaleSlider" class="slider" min="0.5" max="2.0" step="0.01" value="1.0">
+            <span id="scaleLabel" class="value-badge">100%</span>
+        </div>
+        <!-- 循环设置 -->
+        <div class="ctrl-group">
+            <span class="group-title">🔁 循环</span>
+            <button id="setStartBtn" class="btn btn-sm">📍 标记起点</button>
+            <button id="setEndBtn" class="btn btn-sm">🏁 标记终点</button>
+            <button id="clearLoopBtn" class="btn btn-sm">🗑️ 清除循环</button>
+            <button id="toggleLoopBtn" class="btn btn-primary btn-sm">循环已关</button>
+            <span id="loopStatus" class="loop-status">未设置</span>
+            <span class="tip-text">💡 播放到起点/终点 → 点击标记(绿/红点)。启用后自动重复</span>
+        </div>
+    </div>
+    <footer>🎯 舞镜 · 专业扒舞器 | 自由循环 | 调速/镜像/旋转/缩放 | 摄像头实时对比</footer>
+</div>
+
+<script>
+    (function(){
+        // DOM 元素
+        const videoUpload = document.getElementById('videoUpload');
+        const danceVideo = document.getElementById('danceVideo');
+        const fileNameSpan = document.getElementById('fileNameDisplay');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedLabel = document.getElementById('speedLabel');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeLabel = document.getElementById('volumeLabel');
+        const scaleSlider = document.getElementById('scaleSlider');
+        const scaleLabel = document.getElementById('scaleLabel');
+        const rotateLeftBtn = document.getElementById('rotateLeftBtn');
+        const rotateRightBtn = document.getElementById('rotateRightBtn');
+        const resetRotateBtn = document.getElementById('resetRotateBtn');
+        const mirrorBtn = document.getElementById('mirrorBtn');
+        const resetMirrorBtn = document.getElementById('resetMirrorBtn');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const setStartBtn = document.getElementById('setStartBtn');
+        const setEndBtn = document.getElementById('setEndBtn');
+        const clearLoopBtn = document.getElementById('clearLoopBtn');
+        const toggleLoopBtn = document.getElementById('toggleLoopBtn');
+        const loopStatusSpan = document.getElementById('loopStatus');
+
+        // 摄像头
+        const enableCameraBtn = document.getElementById('enableCameraBtn');
+        const disableCameraBtn = document.getElementById('disableCameraBtn');
+        const mirrorCameraBtn = document.getElementById('mirrorCameraBtn');
+        const cameraVideo = document.getElementById('cameraVideo');
+        const cameraCard = document.getElementById('cameraCard');
+        let cameraStream = null;
+        let cameraMirrored = true;
+
+        // 进度条元素
+        const progressTrack = document.getElementById('progressTrack');
+        const progressFill = document.getElementById('progressFill');
+        const progressThumb = document.getElementById('progressThumb');
+        const currentTimeLabel = document.getElementById('currentTimeLabel');
+        const durationLabel = document.getElementById('durationLabel');
+        const loopMarkerStart = document.getElementById('loopMarkerStart');
+        const loopMarkerEnd = document.getElementById('loopMarkerEnd');
+
+        // 状态变量
+        let currentVideoURL = null;
+        let loopStart = null, loopEnd = null, loopEnabled = false;
+        let isDragging = false;
+        let currentRotate = 0, currentScale = 1.0, isMirrored = false;
+
+        // 更新循环按钮文本
+        function updateLoopButtonText() {
+            toggleLoopBtn.textContent = loopEnabled ? "循环已开" : "循环已关";
+        }
+
+        // 更新播放/暂停按钮图标
+        function updatePlayPauseIcon() {
+            playPauseBtn.textContent = danceVideo.paused ? "▶" : "⏸";
+        }
+
+        // 画面变换
+        function updateVideoTransform() {
+            let transform = `scale(${currentScale}) rotate(${currentRotate}deg)`;
+            if (isMirrored) transform += ` scaleX(-1)`;
+            danceVideo.style.transform = transform;
+        }
+        function updateScale() {
+            currentScale = parseFloat(scaleSlider.value);
+            scaleLabel.innerText = `${Math.round(currentScale * 100)}%`;
+            updateVideoTransform();
+        }
+        function rotateLeft() { currentRotate = (currentRotate - 90 + 360) % 360; updateVideoTransform(); }
+        function rotateRight() { currentRotate = (currentRotate + 90) % 360; updateVideoTransform(); }
+        function resetRotate() { currentRotate = 0; updateVideoTransform(); }
+        function setMirror(enable) { isMirrored = enable; updateVideoTransform(); }
+        function updateVolume() {
+            danceVideo.volume = parseFloat(volumeSlider.value);
+            volumeLabel.innerText = `${Math.round(danceVideo.volume * 100)}%`;
+        }
+        function updateSpeed() {
+            const val = parseFloat(speedSlider.value);
+            speedLabel.innerText = val.toFixed(2) + 'x';
+            danceVideo.playbackRate = val;
+        }
+
+        // 摄像头
+        async function enableCamera() {
+            if (cameraStream) disableCamera();
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                cameraStream = stream;
+                cameraVideo.srcObject = stream;
+                cameraVideo.style.transform = cameraMirrored ? 'scaleX(-1)' : 'scaleX(1)';
+                cameraCard.style.display = 'flex';
+            } catch(err) { alert('无法开启摄像头：' + err.message); }
+        }
+        function disableCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(t => t.stop());
+                cameraStream = null;
+                cameraVideo.srcObject = null;
+            }
+            cameraCard.style.display = 'none';
+        }
+        function toggleCameraMirror() {
+            cameraMirrored = !cameraMirrored;
+            cameraVideo.style.transform = cameraMirrored ? 'scaleX(-1)' : 'scaleX(1)';
+        }
+
+        // 循环相关
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        function updateProgressUI() {
+            if (!danceVideo.duration) return;
+            const percent = (danceVideo.currentTime / danceVideo.duration) * 100;
+            progressFill.style.width = `${percent}%`;
+            progressThumb.style.left = `${percent}%`;
+            currentTimeLabel.innerText = formatTime(danceVideo.currentTime);
+            durationLabel.innerText = formatTime(danceVideo.duration);
+        }
+        function updateLoopMarkers() {
+            if (!danceVideo.duration) { loopMarkerStart.style.display = 'none'; loopMarkerEnd.style.display = 'none'; return; }
+            if (loopStart !== null) {
+                loopMarkerStart.style.left = `${(loopStart / danceVideo.duration) * 100}%`;
+                loopMarkerStart.style.display = 'block';
+            } else loopMarkerStart.style.display = 'none';
+            if (loopEnd !== null) {
+                loopMarkerEnd.style.left = `${(loopEnd / danceVideo.duration) * 100}%`;
+                loopMarkerEnd.style.display = 'block';
+            } else loopMarkerEnd.style.display = 'none';
+        }
+        function updateLoopStatusDisplay() {
+            if (loopStart !== null && loopEnd !== null) loopStatusSpan.innerHTML = `${formatTime(loopStart)} → ${formatTime(loopEnd)}`;
+            else if (loopStart !== null) loopStatusSpan.innerHTML = `起点 ${formatTime(loopStart)}`;
+            else if (loopEnd !== null) loopStatusSpan.innerHTML = `终点 ${formatTime(loopEnd)}`;
+            else loopStatusSpan.innerHTML = `未设置`;
+            updateLoopMarkers();
+        }
+        function setLoopStart() {
+            if (!danceVideo.src) return alert('请先上传视频');
+            loopStart = danceVideo.currentTime;
+            if (loopEnd !== null && loopStart >= loopEnd) [loopStart, loopEnd] = [loopEnd, loopStart];
+            updateLoopStatusDisplay();
+            if (loopEnabled && loopStart!==null && loopEnd!==null && (danceVideo.currentTime<loopStart || danceVideo.currentTime>loopEnd)) danceVideo.currentTime = loopStart;
+        }
+        function setLoopEnd() {
+            if (!danceVideo.src) return alert('请先上传视频');
+            loopEnd = danceVideo.currentTime;
+            if (loopStart !== null && loopEnd <= loopStart) [loopStart, loopEnd] = [loopEnd, loopStart];
+            updateLoopStatusDisplay();
+            if (loopEnabled && loopStart!==null && loopEnd!==null && (danceVideo.currentTime<loopStart || danceVideo.currentTime>loopEnd)) danceVideo.currentTime = loopStart;
+        }
+        function clearLoop() {
+            loopStart = null; loopEnd = null;
+            if (loopEnabled) {
+                loopEnabled = false;
+                updateLoopButtonText();
+            }
+            updateLoopStatusDisplay();
+        }
+        function toggleLoop() {
+            if (!danceVideo.src) return alert('请先上传视频');
+            if (loopStart === null || loopEnd === null) return alert('请先标记起点和终点');
+            loopEnabled = !loopEnabled;
+            updateLoopButtonText();
+            if (loopEnabled && (danceVideo.currentTime < loopStart || danceVideo.currentTime > loopEnd)) danceVideo.currentTime = loopStart;
+        }
+        function handleTimeUpdate() {
+            if (loopEnabled && loopStart !== null && loopEnd !== null && danceVideo.currentTime >= loopEnd) {
+                danceVideo.currentTime = loopStart;
+                if (danceVideo.paused) danceVideo.play();
+                updatePlayPauseIcon();
+            }
+            updateProgressUI();
+        }
+
+        // 上传视频
+        function handleVideoUpload(file) {
+            if (currentVideoURL) URL.revokeObjectURL(currentVideoURL);
+            const url = URL.createObjectURL(file);
+            currentVideoURL = url;
+            danceVideo.src = url;
+            danceVideo.load();
+            fileNameSpan.innerText = file.name;
+            // 重置变换
+            currentRotate = 0; currentScale = 1.0; isMirrored = false;
+            scaleSlider.value = '1.0'; updateScale();
+            resetRotate(); setMirror(false);
+            clearLoop();
+            speedSlider.value = '1.0'; updateSpeed();
+            volumeSlider.value = '1.0'; updateVolume();
+            danceVideo.addEventListener('loadedmetadata', () => {
+                durationLabel.innerText = formatTime(danceVideo.duration);
+                updateProgressUI();
+                updateLoopMarkers();
+            }, { once: true });
+        }
+
+        // 进度条跳转
+        function seekTo(e) {
+            const rect = progressTrack.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            x = Math.max(0, Math.min(x, rect.width));
+            const time = (x / rect.width) * danceVideo.duration;
+            danceVideo.currentTime = time;
+            updateProgressUI();
+        }
+        function onMouseMove(e) { if (isDragging) seekTo(e); }
+        function onMouseUp() { isDragging = false; document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
+
+        // 播放/暂停切换
+        function togglePlayPause() {
+            if (!danceVideo.src) return alert('请先上传视频');
+            if (danceVideo.paused) {
+                danceVideo.play();
+            } else {
+                danceVideo.pause();
+            }
+            updatePlayPauseIcon();
+        }
+
+        // 重头播放
+        function restartVideo() {
+            if (!danceVideo.src) return;
+            danceVideo.currentTime = 0;
+            danceVideo.play();
+            updatePlayPauseIcon();
+        }
+
+        // 事件绑定
+        videoUpload.addEventListener('change', e => e.target.files[0] && handleVideoUpload(e.target.files[0]));
+        speedSlider.addEventListener('input', updateSpeed);
+        volumeSlider.addEventListener('input', updateVolume);
+        scaleSlider.addEventListener('input', updateScale);
+        rotateLeftBtn.addEventListener('click', rotateLeft);
+        rotateRightBtn.addEventListener('click', rotateRight);
+        resetRotateBtn.addEventListener('click', resetRotate);
+        mirrorBtn.addEventListener('click', () => setMirror(true));
+        resetMirrorBtn.addEventListener('click', () => setMirror(false));
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        restartBtn.addEventListener('click', restartVideo);
+        setStartBtn.addEventListener('click', setLoopStart);
+        setEndBtn.addEventListener('click', setLoopEnd);
+        clearLoopBtn.addEventListener('click', clearLoop);
+        toggleLoopBtn.addEventListener('click', toggleLoop);
+        danceVideo.addEventListener('timeupdate', handleTimeUpdate);
+        danceVideo.addEventListener('play', updatePlayPauseIcon);
+        danceVideo.addEventListener('pause', updatePlayPauseIcon);
+        progressTrack.addEventListener('click', seekTo);
+        progressThumb.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            isDragging = true;
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+        enableCameraBtn.addEventListener('click', enableCamera);
+        disableCameraBtn.addEventListener('click', disableCamera);
+        mirrorCameraBtn.addEventListener('click', toggleCameraMirror);
+        window.addEventListener('beforeunload', () => {
+            if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+            if (currentVideoURL) URL.revokeObjectURL(currentVideoURL);
+        });
+        updateVideoTransform();
+        updateLoopButtonText();
+        updatePlayPauseIcon();
+    })();
+</script>
+</body>
+</html>
