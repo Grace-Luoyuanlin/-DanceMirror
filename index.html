@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>舞镜 · DanceMirror | 专业扒舞器</title>
-    <!-- CloudBase Web SDK -->
-    <script src="https://static.cloudbase.net/sdk/2.19.0/cloudbase.full.js"></script>
+    <title>舞镜 DanceMirror · 跟跳录制工具</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -54,7 +52,10 @@
             align-items: center;
             gap: 6px;
         }
-        .lang-icon { font-size: 0.9rem; color: #FFD966; }
+        .lang-icon {
+            font-size: 0.9rem;
+            color: #FFD966;
+        }
         .lang-selector select {
             background: transparent;
             border: none;
@@ -65,11 +66,23 @@
             cursor: pointer;
             outline: none;
         }
-        .lang-selector select option { background: #1e293b; color: white; }
-        .hero-desc { color: #cbd5e6; font-size: 0.95rem; margin-bottom: 1.2rem; letter-spacing: 0.3px; }
-        .user-bar { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
-        .user-info { background: rgba(0,0,0,0.4); border-radius: 60px; padding: 6px 16px; font-size: 0.8rem; }
-        .top-actions { display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: center; justify-content: space-between; }
+        .lang-selector select option {
+            background: #1e293b;
+            color: white;
+        }
+        .hero-desc {
+            color: #cbd5e6;
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
+            letter-spacing: 0.3px;
+        }
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            align-items: center;
+            justify-content: space-between;
+        }
         .upload-group, .camera-group {
             background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(4px);
@@ -124,6 +137,8 @@
         .btn-primary { background: linear-gradient(95deg, #FF7B2C, #FF3A5E); box-shadow: 0 4px 12px rgba(255, 50, 80, 0.35); }
         .btn-sm { padding: 5px 12px; font-size: 0.75rem; }
         .btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        .btn-recording { background: #dc2626; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
         .slider { width: 110px; height: 5px; border-radius: 10px; background: #FFB347; -webkit-appearance: none; }
         .slider:focus { outline: none; }
         .slider::-webkit-slider-thumb { width: 15px; height: 15px; background: #FFE484; border-radius: 50%; cursor: pointer; box-shadow: 0 0 6px #FFB347; }
@@ -153,6 +168,11 @@
         .group-title { font-size: 0.75rem; font-weight: 600; color: #FFD966; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 40px; letter-spacing: 0.3px; }
         .loop-status { background: #00000066; padding: 4px 10px; border-radius: 40px; font-size: 0.7rem; font-weight: 500; }
         .tip-text { font-size: 0.65rem; color: #FFD966; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 40px; margin-left: 4px; white-space: nowrap; }
+        .donation-area { background: rgba(0,0,0,0.5); margin: 0.5rem 1rem 0.5rem 1rem; border-radius: 1rem; padding: 0.8rem; text-align: center; border: 1px dashed #FFB347; }
+        .donation-title { font-weight: bold; margin-bottom: 8px; color: #FFD966; }
+        .donation-qr { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; margin-top: 8px; }
+        .donation-qr img { width: 120px; height: 120px; background: white; border-radius: 16px; padding: 6px; object-fit: contain; }
+        .donation-note { font-size: 0.7rem; color: #aaa; margin-top: 8px; }
         .recordings-area { background: rgba(0,0,0,0.5); margin: 0rem 1rem 1rem 1rem; border-radius: 1rem; padding: 0.8rem; border: 1px solid #FFB347; }
         .recordings-title { font-weight: bold; margin-bottom: 8px; color: #FFD966; }
         .recordings-list { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 8px; }
@@ -160,65 +180,6 @@
         .recording-item video { width: 100%; border-radius: 0.5rem; margin-bottom: 0.5rem; }
         .recording-item button { margin: 0 0.25rem; padding: 4px 8px; font-size: 0.7rem; }
         .recording-status { background: #dc2626; color: white; padding: 4px 12px; border-radius: 60px; font-size: 0.7rem; font-weight: bold; margin-left: 8px; }
-        /* 打赏区域左右并排 */
-        .donation-area {
-            background: rgba(0,0,0,0.5);
-            margin: 0.5rem 1rem;
-            border-radius: 1rem;
-            padding: 0.8rem;
-            text-align: center;
-            border: 1px dashed #FFB347;
-        }
-        .donation-title { font-weight: bold; margin-bottom: 8px; color: #FFD966; }
-        .donation-qr-wrapper {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-            margin-top: 0.5rem;
-        }
-        .donation-qr-item {
-            text-align: center;
-        }
-        .donation-qr-item img {
-            width: 120px;
-            height: 120px;
-            background: white;
-            border-radius: 16px;
-            padding: 6px;
-            object-fit: contain;
-        }
-        /* 付费墙内套餐卡片样式 */
-        .payment-methods { display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; flex-wrap: wrap; }
-        .plan-card {
-            background: #1E293B;
-            border-radius: 1rem;
-            padding: 0.8rem;
-            width: 160px;
-            text-align: center;
-            cursor: pointer;
-            border: 1px solid #FFB347;
-            transition: 0.2s;
-        }
-        .plan-card.selected { border: 2px solid #FF8C42; background: #2d3a4f; }
-        .pay-qr-wrapper {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin: 1rem 0;
-            flex-wrap: wrap;
-        }
-        .pay-qr-item {
-            text-align: center;
-        }
-        .pay-qr-item img {
-            width: 140px;
-            height: 140px;
-            background: white;
-            border-radius: 16px;
-            padding: 8px;
-            object-fit: contain;
-        }
         @media (max-width: 860px) {
             .video-area { grid-template-columns: 1fr; }
             .bottom-controls { flex-direction: column; align-items: stretch; }
@@ -227,15 +188,8 @@
             .progress-container { flex-wrap: wrap; }
             .hero-title { font-size: 1.5rem; }
             .lang-selector { float: none; margin-top: 10px; display: inline-flex; }
-            .donation-qr-wrapper { gap: 1rem; }
-            .pay-qr-wrapper { gap: 1rem; }
         }
         footer { text-align: center; padding: 0.8rem; font-size: 0.7rem; border-top: 1px solid rgba(255, 255, 255, 0.05); color: #8b9bb0; }
-        /* 模态框样式 */
-        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-card { background: #1E293B; border-radius: 2rem; padding: 2rem; width: 90%; max-width: 400px; text-align: center; border: 1px solid #FFB347; }
-        .modal-card input { display: block; width: 100%; margin: 0.8rem 0; padding: 0.8rem; border-radius: 60px; border: none; background: #0F172A; color: white; }
-        .modal-card button { margin-top: 0.5rem; width: 100%; }
     </style>
 </head>
 <body>
@@ -247,12 +201,6 @@
                 <span class="lang-icon">🌐</span>
                 <select id="langSelect"></select>
             </div>
-        </div>
-        <div class="user-bar">
-            <div class="user-info" id="userStatus">加载中...</div>
-            <button id="upgradeBtn" class="btn btn-primary btn-sm">升级会员</button>
-            <button id="loginBtn" class="btn btn-sm">登录/注册</button>
-            <button id="logoutBtn" class="btn btn-sm" style="display:none;">退出</button>
         </div>
         <div class="hero-desc" id="heroDesc">上传舞蹈视频 → 自由标记循环区间 | 调速/镜像/旋转/缩放 | 摄像头实时跟跳 | 录制对比视频</div>
         <div class="top-actions">
@@ -302,71 +250,48 @@
         <div class="donation-note" style="margin-top: 8px;">停止录制后，视频将出现在此处。可预览或下载。</div>
     </div>
 
-    <!-- 打赏区域（左右并排） -->
+    <!-- 打赏区域：已替换为真实收款码 -->
     <div class="donation-area">
-        <div class="donation-title">☕ 喜欢这个工具？请作者喝杯咖啡～</div>
-        <div class="donation-qr-wrapper">
-            <div class="donation-qr-item">
-                <img src="https://dancemirror-pay-1420015471.cos.ap-guangzhou.myqcloud.com/%E5%BE%AE%E4%BF%A1%E6%89%93%E8%B5%8F.jpg" alt="微信打赏">
-                <div>微信打赏</div>
-            </div>
-            <div class="donation-qr-item">
-                <img src="https://dancemirror-pay-1420015471.cos.ap-guangzhou.myqcloud.com/%E6%94%AF%E4%BB%98%E5%AE%9D%E6%89%93%E8%B5%8F.jpg" alt="支付宝打赏">
-                <div>支付宝打赏</div>
-            </div>
+        <div class="donation-title" id="donationTitle">☕ 支持我们 · 请作者喝杯咖啡</div>
+        <div class="donation-qr" id="donationQr">
+            <img src="https://dancemirror-pay-1420015471.cos.ap-guangzhou.myqcloud.com/%E5%BE%AE%E4%BF%A1%E6%89%93%E8%B5%8F.jpg" alt="微信收款码">
+            <img src="https://dancemirror-pay-1420015471.cos.ap-guangzhou.myqcloud.com/%E6%94%AF%E4%BB%98%E5%AE%9D%E6%89%93%E8%B5%8F.jpg" alt="支付宝收款码">
         </div>
-        <div class="donation-note">您的支持是我持续改进的动力！</div>
+        <div class="donation-note" id="donationNote">如果您觉得工具好用，欢迎打赏支持！您的鼓励是我持续改进的动力。</div>
     </div>
-
-    <!-- 付费墙（升级会员） -->
-    <div id="paywall" style="display: none; margin: 1rem; padding: 1rem; background: rgba(0,0,0,0.85); border-radius: 1rem; text-align: center;">
-        <h3>升级会员</h3>
-        <p>解锁全部功能，支持我们持续开发</p>
-        <div class="payment-methods">
-            <div class="plan-card" data-plan="month" data-days="30" data-price="5.9">月度会员<br>¥5.9 / 30天</div>
-            <div class="plan-card" data-plan="quarter" data-days="90" data-price="9.9">季度会员<br>¥9.9 / 90天</div>
-        </div>
-        <div id="payQrContainer" style="display: none;">
-            <div class="pay-qr-wrapper" id="qrWrapper"></div>
-            <div style="margin-top: 12px;">
-                <button id="confirmPayBtn" class="btn btn-primary">我已支付，确认开通</button>
-            </div>
-        </div>
-    </div>
-
     <footer>🎯 舞镜 · 专业扒舞器 | 自由循环 | 调速/镜像/旋转/缩放 | 摄像头实时对比 | 录制跟跳/对比视频</footer>
 </div>
 
 <script>
-    // ==================== 1. CloudBase 初始化 ====================
-    const ENV_ID = 'wujing-prod-2gzrpq099e1ebf8e';
-    const app = cloudbase.init({ env: ENV_ID });
-    const auth = app.auth();
-    const db = app.database();
-
-    let currentUser = null;
-    let isPro = false;
-    let selectedDays = null;
-
-    // ==================== 2. 多语言资源 ====================
+    // ==================== 多语言资源 ====================
     const translations = {
-        zh: { name: "简体中文", heroDesc: "上传舞蹈视频 → 自由标记循环区间 | 调速/镜像/旋转/缩放 | 摄像头实时跟跳 | 录制对比视频", uploadLabel: "📂 上传舞蹈视频", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 跟跳", enableCamera: "开摄像头", mirrorCamera: "镜头镜像", disableCamera: "关闭", refTitle: "📺 参考舞蹈", camTitle: "🤳 你的跟跳", speedLabel: "⏩ 速度", volumeLabel: "🔊 音量", videoSettings: "🎬 画面", mirror: "🪞 镜像", resetMirror: "重置", rotateLeft: "↩️ 左转", rotateRight: "↪️ 右转", resetRotate: "⟳ 重置", loopSettings: "🔁 循环", setStart: "📍 标记起点", setEnd: "🏁 标记终点", clearLoop: "🗑️ 清除循环", loopTip: "💡 播放到起点/终点 → 点击标记(绿/红点)。启用后自动重复" },
-        en: { name: "English", heroDesc: "Upload dance video → Mark loop segment | Speed/Mirror/Rotate/Zoom | Camera mirroring | Record comparison", uploadLabel: "📂 Upload Video", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 Mirror Cam", enableCamera: "Enable Cam", mirrorCamera: "Mirror Cam", disableCamera: "Disable", refTitle: "📺 Reference", camTitle: "🤳 Your Mirror", speedLabel: "⏩ Speed", volumeLabel: "🔊 Volume", videoSettings: "🎬 Video", mirror: "🪞 Mirror", resetMirror: "Reset", rotateLeft: "↩️ Rotate L", rotateRight: "↪️ Rotate R", resetRotate: "⟳ Reset", loopSettings: "🔁 Loop", setStart: "📍 Set Start", setEnd: "🏁 Set End", clearLoop: "🗑️ Clear", loopTip: "💡 Play to start/end → click markers (green/red). Enable to repeat." },
-        ja: { name: "日本語", heroDesc: "ダンス動画をアップロード → ループ区間を自由に設定 | 速度/ミラー/回転/拡大縮小 | カメラミラーリング | 比較録画", uploadLabel: "📂 動画をアップロード", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 ミラーカメラ", enableCamera: "カメラON", mirrorCamera: "カメラミラー", disableCamera: "オフ", refTitle: "📺 参考動画", camTitle: "🤳 あなたのミラー", speedLabel: "⏩ 速度", volumeLabel: "🔊 音量", videoSettings: "🎬 映像", mirror: "🪞 ミラー", resetMirror: "リセット", rotateLeft: "↩️ 左回転", rotateRight: "↪️ 右回転", resetRotate: "⟳ リセット", loopSettings: "🔁 ループ", setStart: "📍 開始点", setEnd: "🏁 終了点", clearLoop: "🗑️ クリア", loopTip: "💡 開始/終了位置でマーク(緑/赤)。有効にすると繰り返し。" }
+        zh: { name: "简体中文", heroDesc: "上传舞蹈视频 → 自由标记循环区间 | 调速/镜像/旋转/缩放 | 摄像头实时跟跳 | 录制对比视频", uploadLabel: "📂 上传舞蹈视频", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 跟跳", enableCamera: "开摄像头", mirrorCamera: "镜头镜像", disableCamera: "关闭", refTitle: "📺 参考舞蹈", camTitle: "🤳 你的跟跳", speedLabel: "⏩ 速度", volumeLabel: "🔊 音量", videoSettings: "🎬 画面", mirror: "🪞 镜像", resetMirror: "重置", rotateLeft: "↩️ 左转", rotateRight: "↪️ 右转", resetRotate: "⟳ 重置", loopSettings: "🔁 循环", setStart: "📍 标记起点", setEnd: "🏁 标记终点", clearLoop: "🗑️ 清除循环", loopTip: "💡 播放到起点/终点 → 点击标记(绿/红点)。启用后自动重复", donationTitle: "☕ 支持我们 · 请作者喝杯咖啡", donationNote: "如果您觉得工具好用，欢迎打赏支持！您的鼓励是我持续改进的动力。" },
+        zh_TW: { name: "繁體中文", heroDesc: "上傳舞蹈影片 → 自由標記循環區間 | 調速/鏡像/旋轉/縮放 | 攝影機即時跟跳 | 錄製對比影片", uploadLabel: "📂 上傳舞蹈影片", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 跟跳", enableCamera: "開啟攝影機", mirrorCamera: "鏡像鏡頭", disableCamera: "關閉", refTitle: "📺 參考舞蹈", camTitle: "🤳 你的跟跳", speedLabel: "⏩ 速度", volumeLabel: "🔊 音量", videoSettings: "🎬 畫面", mirror: "🪞 鏡像", resetMirror: "重置", rotateLeft: "↩️ 左轉", rotateRight: "↪️ 右轉", resetRotate: "⟳ 重置", loopSettings: "🔁 循環", setStart: "📍 標記起點", setEnd: "🏁 標記終點", clearLoop: "🗑️ 清除循環", loopTip: "💡 播放到起點/終點 → 點擊標記(綠/紅點)。啟用後自動重複", donationTitle: "☕ 支持我們 · 請作者喝杯咖啡", donationNote: "如果您覺得工具好用，歡迎打賞支持！您的鼓勵是我持續改進的動力。" },
+        en: { name: "English", heroDesc: "Upload dance video → Mark loop segment | Speed/Mirror/Rotate/Zoom | Camera mirroring | Record comparison", uploadLabel: "📂 Upload Video", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 Mirror Cam", enableCamera: "Enable Cam", mirrorCamera: "Mirror Cam", disableCamera: "Disable", refTitle: "📺 Reference", camTitle: "🤳 Your Mirror", speedLabel: "⏩ Speed", volumeLabel: "🔊 Volume", videoSettings: "🎬 Video", mirror: "🪞 Mirror", resetMirror: "Reset", rotateLeft: "↩️ Rotate L", rotateRight: "↪️ Rotate R", resetRotate: "⟳ Reset", loopSettings: "🔁 Loop", setStart: "📍 Set Start", setEnd: "🏁 Set End", clearLoop: "🗑️ Clear", loopTip: "💡 Play to start/end → click markers (green/red). Enable to repeat.", donationTitle: "☕ Support Us · Buy me a coffee", donationNote: "Like this tool? Donations are greatly appreciated! Your support fuels continuous improvement." },
+        ja: { name: "日本語", heroDesc: "ダンス動画をアップロード → ループ区間を自由に設定 | 速度/ミラー/回転/拡大縮小 | カメラミラーリング | 比較録画", uploadLabel: "📂 動画をアップロード", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 ミラーカメラ", enableCamera: "カメラON", mirrorCamera: "カメラミラー", disableCamera: "オフ", refTitle: "📺 参考動画", camTitle: "🤳 あなたのミラー", speedLabel: "⏩ 速度", volumeLabel: "🔊 音量", videoSettings: "🎬 映像", mirror: "🪞 ミラー", resetMirror: "リセット", rotateLeft: "↩️ 左回転", rotateRight: "↪️ 右回転", resetRotate: "⟳ リセット", loopSettings: "🔁 ループ", setStart: "📍 開始点", setEnd: "🏁 終了点", clearLoop: "🗑️ クリア", loopTip: "💡 開始/終了位置でマーク(緑/赤)。有効にすると繰り返し。", donationTitle: "☕ サポート · コーヒーをご馳走さま", donationNote: "気に入ったら投げ銭をお願いします！あなたの応援が継続的な改善の力になります。" },
+        ko: { name: "한국어", heroDesc: "댄스 비디오 업로드 → 루프 구간 자유 설정 | 속도/미러/회전/확대축소 | 카메라 미러링 | 비교 녹화", uploadLabel: "📂 비디오 업로드", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 미러 캠", enableCamera: "카메라 켜기", mirrorCamera: "카메라 미러", disableCamera: "끄기", refTitle: "📺 참조 댄스", camTitle: "🤳 나의 미러", speedLabel: "⏩ 속도", volumeLabel: "🔊 볼륨", videoSettings: "🎬 화면", mirror: "🪞 미러", resetMirror: "초기화", rotateLeft: "↩️ 왼쪽 회전", rotateRight: "↪️ 오른쪽 회전", resetRotate: "⟳ 초기화", loopSettings: "🔁 루프", setStart: "📍 시작점", setEnd: "🏁 끝점", clearLoop: "🗑️ 지우기", loopTip: "💡 시작/끝 지점에서 마커(초록/빨강) 클릭. 활성화하면 반복.", donationTitle: "☕ 지원 · 커피 한잔 사주기", donationNote: "도움이 되셨다면 후원 부탁드립니다! 응원이 지속적인 개선의 원동력이 됩니다." },
+        es: { name: "Español", heroDesc: "Sube video de baile → Marca segmento de bucle | Velocidad/Espejo/Rotar/Zoom | Cámara espejo | Grabar comparación", uploadLabel: "📂 Subir video", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 Cámara espejo", enableCamera: "Activar cámara", mirrorCamera: "Espejo cámara", disableCamera: "Desactivar", refTitle: "📺 Referencia", camTitle: "🤳 Tu espejo", speedLabel: "⏩ Velocidad", volumeLabel: "🔊 Volumen", videoSettings: "🎬 Imagen", mirror: "🪞 Espejo", resetMirror: "Restablecer", rotateLeft: "↩️ Girar izq", rotateRight: "↪️ Girar der", resetRotate: "⟳ Restablecer", loopSettings: "🔁 Bucle", setStart: "📍 Marcar inicio", setEnd: "🏁 Marcar fin", clearLoop: "🗑️ Borrar", loopTip: "💡 Reproduce hasta inicio/fin → haz clic en marcadores (verde/rojo). Activar para repetir.", donationTitle: "☕ Apóyanos · Invítame un café", donationNote: "¿Te gusta esta herramienta? ¡Las donaciones son bienvenidas! Tu apoyo impulsa mejoras continuas." },
+        fr: { name: "Français", heroDesc: "Téléchargez une vidéo de danse → Marquez une section de boucle | Vitesse/Miroir/Rotation/Zoom | Caméra miroir | Enregistrer comparaison", uploadLabel: "📂 Télécharger", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 Caméra miroir", enableCamera: "Activer caméra", mirrorCamera: "Miroir caméra", disableCamera: "Désactiver", refTitle: "📺 Référence", camTitle: "🤳 Votre miroir", speedLabel: "⏩ Vitesse", volumeLabel: "🔊 Volume", videoSettings: "🎬 Image", mirror: "🪞 Miroir", resetMirror: "Réinitialiser", rotateLeft: "↩️ Rotation G", rotateRight: "↪️ Rotation D", resetRotate: "⟳ Réinitialiser", loopSettings: "🔁 Boucle", setStart: "📍 Marquer début", setEnd: "🏁 Marquer fin", clearLoop: "🗑️ Effacer", loopTip: "💡 Jouez jusqu'au début/fin → cliquez sur marqueurs (vert/rouge). Activez pour répéter.", donationTitle: "☕ Soutenez-nous · Offrez un café", donationNote: "Vous aimez cet outil ? Les dons sont grandement appréciés ! Votre soutien alimente l'amélioration continue." },
+        de: { name: "Deutsch", heroDesc: "Tanzvideo hochladen → Loop-Bereich markieren | Geschwindigkeit/Spiegelung/Drehen/Zoom | Kamera-Spiegelung | Vergleich aufnehmen", uploadLabel: "📂 Video hochladen", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 Spiegelkamera", enableCamera: "Kamera einschalten", mirrorCamera: "Kamera spiegeln", disableCamera: "Ausschalten", refTitle: "📺 Referenztanz", camTitle: "🤳 Dein Spiegel", speedLabel: "⏩ Geschwindigkeit", volumeLabel: "🔊 Lautstärke", videoSettings: "🎬 Bild", mirror: "🪞 Spiegeln", resetMirror: "Zurücksetzen", rotateLeft: "↩️ Links drehen", rotateRight: "↪️ Rechts drehen", resetRotate: "⟳ Zurücksetzen", loopSettings: "🔁 Schleife", setStart: "📍 Start markieren", setEnd: "🏁 Ende markieren", clearLoop: "🗑️ Löschen", loopTip: "💡 Spiele bis Start/Ende → Klicke auf Marker (grün/rot). Aktivieren zum Wiederholen.", donationTitle: "☕ Unterstütze uns · Kauf mir einen Kaffee", donationNote: "Gefällt dir das Tool? Spenden sind willkommen! Deine Unterstützung treibt kontinuierliche Verbesserungen an." },
+        ru: { name: "Русский", heroDesc: "Загрузите танцевальное видео → Отметьте участок повтора | Скорость/Зеркало/Поворот/Масштаб | Зеркало камеры | Запись сравнения", uploadLabel: "📂 Загрузить видео", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 Зеркало камеры", enableCamera: "Включить камеру", mirrorCamera: "Зеркало камеры", disableCamera: "Выключить", refTitle: "📺 Эталон", camTitle: "🤳 Ваше зеркало", speedLabel: "⏩ Скорость", volumeLabel: "🔊 Громкость", videoSettings: "🎬 Изображение", mirror: "🪞 Зеркало", resetMirror: "Сброс", rotateLeft: "↩️ Влево", rotateRight: "↪️ Вправо", resetRotate: "⟳ Сброс", loopSettings: "🔁 Повтор", setStart: "📍 Отметить начало", setEnd: "🏁 Отметить конец", clearLoop: "🗑️ Очистить", loopTip: "💡 Воспроизведите до начала/конца → нажмите маркеры (зел/красн). Активируйте для повтора.", donationTitle: "☕ Поддержите нас · Купите мне кофе", donationNote: "Нравится инструмент? Пожертвования приветствуются! Ваша поддержка способствует постоянному улучшению." },
+        pt: { name: "Português", heroDesc: "Envie vídeo de dança → Marque segmento de loop | Velocidade/Espelho/Rodar/Zoom | Câmera espelho | Gravar comparação", uploadLabel: "📂 Enviar vídeo", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 Câmera espelho", enableCamera: "Ligar câmera", mirrorCamera: "Espelhar câmera", disableCamera: "Desligar", refTitle: "📺 Referência", camTitle: "🤳 Seu espelho", speedLabel: "⏩ Velocidade", volumeLabel: "🔊 Volume", videoSettings: "🎬 Imagem", mirror: "🪞 Espelho", resetMirror: "Redefinir", rotateLeft: "↩️ Girar E", rotateRight: "↪️ Girar D", resetRotate: "⟳ Redefinir", loopSettings: "🔁 Loop", setStart: "📍 Marcar início", setEnd: "🏁 Marcar fim", clearLoop: "🗑️ Limpar", loopTip: "💡 Reproduza até início/fim → clique nos marcadores (verde/vermelho). Ative para repetir.", donationTitle: "☕ Apoie-nos · Pague um café", donationNote: "Gostou da ferramenta? Doações são bem-vindas! Seu apoio impulsiona melhorias contínuas." },
+        ar: { name: "العربية", heroDesc: "تحميل فيديو الرقص → تحديد مقطع التكرار | السرعة/الانعكاس/التدوير/التكبير | كاميرا عاكسة | تسجيل المقارنة", uploadLabel: "📂 تحميل فيديو", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 كاميرا عاكسة", enableCamera: "تشغيل الكاميرا", mirrorCamera: "عكس الكاميرا", disableCamera: "إيقاف", refTitle: "📺 مرجع", camTitle: "🤳 انعكاسك", speedLabel: "⏩ السرعة", volumeLabel: "🔊 الصوت", videoSettings: "🎬 الشاشة", mirror: "🪞 انعكاس", resetMirror: "إعادة تعيين", rotateLeft: "↩️ تدوير يسار", rotateRight: "↪️ تدوير يمين", resetRotate: "⟳ إعادة تعيين", loopSettings: "🔁 تكرار", setStart: "📍 تعيين بداية", setEnd: "🏁 تعيين نهاية", clearLoop: "🗑️ مسح", loopTip: "💡 شغّل إلى البداية/النهاية → انقر على العلامات (أخضر/أحمر). فعّل للتكرار.", donationTitle: "☕ ادعمنا · اشتر لي قهوة", donationNote: "أعجبك هذه الأداة؟ التبرعات مرحب بها! دعمك يغذي التحسين المستمر." },
+        it: { name: "Italiano", heroDesc: "Carica video di danza → Segna segmento di loop | Velocità/Specchio/Ruota/Zoom | Specchio telecamera | Registra confronto", uploadLabel: "📂 Carica video", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 Specchio cam", enableCamera: "Attiva cam", mirrorCamera: "Specchia cam", disableCamera: "Disattiva", refTitle: "📺 Riferimento", camTitle: "🤳 Il tuo specchio", speedLabel: "⏩ Velocità", volumeLabel: "🔊 Volume", videoSettings: "🎬 Immagine", mirror: "🪞 Specchio", resetMirror: "Ripristina", rotateLeft: "↩️ Ruota SX", rotateRight: "↪️ Ruota DX", resetRotate: "⟳ Ripristina", loopSettings: "🔁 Loop", setStart: "📍 Segna inizio", setEnd: "🏁 Segna fine", clearLoop: "🗑️ Cancella", loopTip: "💡 Riproduci fino a inizio/fine → clicca sui marcatori (verde/rosso). Attiva per ripetere.", donationTitle: "☕ Supportaci · Offrimi un caffè", donationNote: "Ti piace questo strumento? Le donazioni sono gradite! Il tuo supporto alimenta il miglioramento continuo." },
+        vi: { name: "Tiếng Việt", heroDesc: "Tải video nhảy lên → Đánh dấu đoạn lặp | Tốc độ/Gương/Xoay/Thu phóng | Gương camera | Ghi so sánh", uploadLabel: "📂 Tải video lên", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 Gương camera", enableCamera: "Bật camera", mirrorCamera: "Gương camera", disableCamera: "Tắt", refTitle: "📺 Tham khảo", camTitle: "🤳 Gương của bạn", speedLabel: "⏩ Tốc độ", volumeLabel: "🔊 Âm lượng", videoSettings: "🎬 Hình ảnh", mirror: "🪞 Gương", resetMirror: "Đặt lại", rotateLeft: "↩️ Xoay trái", rotateRight: "↪️ Xoay phải", resetRotate: "⟳ Đặt lại", loopSettings: "🔁 Lặp", setStart: "📍 Đánh dấu bắt đầu", setEnd: "🏁 Đánh dấu kết thúc", clearLoop: "🗑️ Xóa", loopTip: "💡 Phát đến đầu/cuối → nhấp vào điểm đánh dấu (xanh/đỏ). Bật để lặp lại.", donationTitle: "☕ Ủng hộ chúng tôi · Mời tôi cà phê", donationNote: "Thích công cụ này? Ủng hộ là rất được hoan nghênh! Sự hỗ trợ của bạn thúc đẩy cải tiến liên tục." },
+        th: { name: "ภาษาไทย", heroDesc: "อัปโหลดวิดีโอเต้น → ทำเครื่องหมายช่วงวนซ้ำ | ความเร็ว/กลับด้าน/หมุน/ซูม | กล้องสะท้อน | บันทึกเปรียบเทียบ", uploadLabel: "📂 อัปโหลดวิดีโอ", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 กระจกกล้อง", enableCamera: "เปิดกล้อง", mirrorCamera: "กระจกกล้อง", disableCamera: "ปิด", refTitle: "📺 อ้างอิง", camTitle: "🤳 กระจกของคุณ", speedLabel: "⏩ ความเร็ว", volumeLabel: "🔊 เสียง", videoSettings: "🎬 ภาพ", mirror: "🪞 กลับด้าน", resetMirror: "รีเซ็ต", rotateLeft: "↩️ หมุนซ้าย", rotateRight: "↪️ หมุนขวา", resetRotate: "⟳ รีเซ็ต", loopSettings: "🔁 วนซ้ำ", setStart: "📍 เริ่มต้น", setEnd: "🏁 สิ้นสุด", clearLoop: "🗑️ ล้าง", loopTip: "💡 เล่นไปยังจุดเริ่ม/สิ้นสุด → คลิกเครื่องหมาย (เขียว/แดง). เปิดใช้งานเพื่อทำซ้ำ", donationTitle: "☕ สนับสนุนเรา · ซื้อกาแฟให้ฉัน", donationNote: "ชอบเครื่องมือนี้ไหม? การบริจาคยินดีต้อนรับเสมอ! การสนับสนุนของคุณเป็นแรงผลักดันให้เราพัฒนาอย่างต่อเนื่อง" },
+        id: { name: "Bahasa Indonesia", heroDesc: "Unggah video dansa → Tandai segmen loop | Kecepatan/Cermin/Putar/Zoom | Cermin kamera | Rekam perbandingan", uploadLabel: "📂 Unggah video", uploadHint: "MP4 / MOV / WebM", cameraTitle: "📷 Cermin kamera", enableCamera: "Nyalakan kamera", mirrorCamera: "Cermin kamera", disableCamera: "Matikan", refTitle: "📺 Referensi", camTitle: "🤳 Cermin Anda", speedLabel: "⏩ Kecepatan", volumeLabel: "🔊 Volume", videoSettings: "🎬 Gambar", mirror: "🪞 Cermin", resetMirror: "Atur ulang", rotateLeft: "↩️ Putar kiri", rotateRight: "↪️ Putar kanan", resetRotate: "⟳ Atur ulang", loopSettings: "🔁 Loop", setStart: "📍 Tandai mulai", setEnd: "🏁 Tandai akhir", clearLoop: "🗑️ Hapus", loopTip: "💡 Putar ke mulai/akhir → klik penanda (hijau/merah). Aktifkan untuk mengulang.", donationTitle: "☕ Dukung kami · Traktir kopi", donationNote: "Suka alat ini? Donasi sangat dihargai! Dukungan Anda mendorong perbaikan berkelanjutan." }
     };
 
-    // 动态生成语言下拉框
+    // 生成下拉选择框
     const langSelect = document.getElementById('langSelect');
-    if (langSelect) {
-        for (let code in translations) {
-            let option = document.createElement('option');
-            option.value = code;
-            option.textContent = translations[code].name;
-            langSelect.appendChild(option);
-        }
-        langSelect.value = 'zh';
-        langSelect.addEventListener('change', (e) => setLanguage(e.target.value));
+    for (let code in translations) {
+        let option = document.createElement('option');
+        option.value = code;
+        option.textContent = translations[code].name;
+        langSelect.appendChild(option);
     }
+    langSelect.value = 'zh';
+
     function setLanguage(lang) {
         const t = translations[lang];
         if (!t) return;
@@ -392,173 +317,17 @@
         document.querySelector('[data-key="setEnd"]').innerText = t.setEnd;
         document.querySelector('[data-key="clearLoop"]').innerText = t.clearLoop;
         document.getElementById('loopTip').innerText = t.loopTip;
+        document.getElementById('donationTitle').innerText = t.donationTitle;
+        document.getElementById('donationNote').innerText = t.donationNote;
     }
+
+    langSelect.addEventListener('change', (e) => {
+        setLanguage(e.target.value);
+    });
     setLanguage('zh');
 
-    // ==================== 3. 登录/注册模态框 ====================
-    function showLoginModal() {
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-card">
-                <h3>登录 / 注册</h3>
-                <p style="font-size:0.8rem; margin-bottom:0.5rem;">注册后可获得7天免费试用，并跨设备保存会员状态</p>
-                <input type="text" id="loginUsername" placeholder="用户名/手机号/邮箱" autocomplete="off">
-                <input type="password" id="loginPassword" placeholder="密码">
-                <button id="doLoginBtn" class="btn btn-primary">登录</button>
-                <button id="doRegisterBtn" class="btn">注册新账号</button>
-                <button id="anonymousBtn" class="btn">匿名试用7天</button>
-                <button id="closeModalBtn" class="btn" style="margin-top:0.5rem;">取消</button>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        const close = () => modal.remove();
-        document.getElementById('closeModalBtn').onclick = close;
-        document.getElementById('doLoginBtn').onclick = async () => {
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            try {
-                await auth.signInWithUsernameAndPassword(username, password);
-                close();
-                await checkUserStatus();
-            } catch(e) { alert('登录失败：'+e.message); }
-        };
-        document.getElementById('doRegisterBtn').onclick = async () => {
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            if (!username || !password) { alert('请填写用户名和密码'); return; }
-            try {
-                await auth.signUpWithUsernameAndPassword(username, password);
-                const user = auth.currentUser;
-                const usersCollection = db.collection('users');
-                const expireDate = new Date(); expireDate.setDate(expireDate.getDate()+7);
-                await usersCollection.add({ _id: user.uid, expireDate, createdAt: new Date() });
-                close();
-                await checkUserStatus();
-            } catch(e) { alert('注册失败：'+e.message); }
-        };
-        document.getElementById('anonymousBtn').onclick = async () => {
-            await auth.signInAnonymously();
-            close();
-            await checkUserStatus();
-        };
-    }
-
-    // ==================== 4. 会员状态检查 ====================
-    async function checkUserStatus() {
-        const loginState = await auth.getLoginState();
-        if (!loginState) {
-            showLoginModal();
-            return;
-        }
-        currentUser = loginState;
-        const userId = currentUser.user.uid;
-        const usersCollection = db.collection('users');
-        const queryResult = await usersCollection.where({ _id: userId }).get();
-        let expireDate = null;
-        if (queryResult.data && queryResult.data.length > 0) {
-            expireDate = new Date(queryResult.data[0].expireDate);
-        } else {
-            const newExpire = new Date();
-            newExpire.setDate(newExpire.getDate() + 7);
-            await usersCollection.add({ _id: userId, expireDate: newExpire, createdAt: new Date() });
-            expireDate = newExpire;
-        }
-        if (expireDate && expireDate > new Date()) {
-            isPro = true;
-            document.getElementById('userStatus').innerHTML = `会员有效期至 ${expireDate.toLocaleDateString()}`;
-            document.getElementById('paywall').style.display = 'none';
-            enableProFeatures(true);
-        } else {
-            isPro = false;
-            document.getElementById('userStatus').innerHTML = '试用期已过，请升级会员';
-            document.getElementById('paywall').style.display = 'block';
-            enableProFeatures(false);
-        }
-        document.getElementById('loginBtn').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'inline-block';
-    }
-
-    function enableProFeatures(enabled) {
-        const cameraBtn = document.getElementById('enableCameraBtn');
-        const setStartBtn = document.getElementById('setStartBtn');
-        const setEndBtn = document.getElementById('setEndBtn');
-        const toggleLoopBtn = document.getElementById('toggleLoopBtn');
-        if (cameraBtn) cameraBtn.disabled = !enabled;
-        if (setStartBtn) setStartBtn.disabled = !enabled;
-        if (setEndBtn) setEndBtn.disabled = !enabled;
-        if (toggleLoopBtn) toggleLoopBtn.disabled = !enabled;
-        if (!enabled && window.disableCamera) window.disableCamera();
-    }
-
-    // ==================== 5. 升级会员逻辑（显示对应二维码） ====================
-    document.getElementById('upgradeBtn').onclick = () => document.getElementById('paywall').style.display = 'block';
-
-    // 定义二维码 URL
-    const qrUrls = {
-        month: {
-            wechat: 'https://dancemirror-pay-1420015471.cos.ap-guangzhou.myqcloud.com/%E5%BE%AE5.9.jpg',
-            alipay: 'https://dancemirror-pay-1420015471.cos.ap-guangzhou.myqcloud.com/%E6%94%AF5.9.jpg'
-        },
-        quarter: {
-            wechat: 'https://dancemirror-pay-1420015471.cos.ap-guangzhou.myqcloud.com/%E5%BE%AE9.9.jpg',
-            alipay: 'https://dancemirror-pay-1420015471.cos.ap-guangzhou.myqcloud.com/%E6%94%AF9.9.jpg'
-        }
-    };
-
-    const planCards = document.querySelectorAll('.plan-card');
-    const qrContainer = document.getElementById('payQrContainer');
-    const qrWrapper = document.getElementById('qrWrapper');
-    let currentPlan = null;
-
-    planCards.forEach(card => {
-        card.onclick = () => {
-            planCards.forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            const plan = card.dataset.plan;
-            currentPlan = plan;
-            selectedDays = parseInt(card.dataset.days);
-            // 显示对应的微信和支付宝二维码
-            qrWrapper.innerHTML = `
-                <div class="pay-qr-item">
-                    <img src="${qrUrls[plan].wechat}" alt="微信支付">
-                    <div>微信支付 ¥${card.dataset.price}</div>
-                </div>
-                <div class="pay-qr-item">
-                    <img src="${qrUrls[plan].alipay}" alt="支付宝支付">
-                    <div>支付宝支付 ¥${card.dataset.price}</div>
-                </div>
-            `;
-            qrContainer.style.display = 'block';
-        };
-    });
-
-    document.getElementById('confirmPayBtn').onclick = async () => {
-        if (!selectedDays) { alert('请先选择套餐'); return; }
-        if (!currentUser) { alert('请先登录'); return; }
-        try {
-            const result = await app.callFunction({
-                name: 'updateUserExpire',
-                data: { userId: currentUser.user.uid, daysToAdd: selectedDays }
-            });
-            if (result.result && result.result.success) {
-                alert(`升级成功！会员有效期已延长 ${selectedDays} 天`);
-                await checkUserStatus();
-                qrContainer.style.display = 'none';
-            } else {
-                alert('升级失败：' + (result.result?.message || '未知错误'));
-            }
-        } catch(err) {
-            console.error(err);
-            alert('调用云函数失败，请稍后重试');
-        }
-    };
-
-    document.getElementById('logoutBtn').onclick = async () => { await auth.signOut(); location.reload(); };
-    document.getElementById('loginBtn').onclick = () => showLoginModal();
-
-    // ==================== 6. 完整视频/录制/循环功能 ====================
-    (function() {
+    // ==================== 原有功能脚本 + 增强录制功能 ====================
+    (function(){
         // DOM 元素
         const videoUpload = document.getElementById('videoUpload');
         const danceVideo = document.getElementById('danceVideo');
@@ -593,18 +362,13 @@
         const durationLabel = document.getElementById('durationLabel');
         const loopMarkerStart = document.getElementById('loopMarkerStart');
         const loopMarkerEnd = document.getElementById('loopMarkerEnd');
+
+        // 录制相关
         const recordOnlyCamBtn = document.getElementById('recordOnlyCamBtn');
         const recordCompareBtn = document.getElementById('recordCompareBtn');
         const recordingStatusSpan = document.getElementById('recordingStatus');
         const recordingsList = document.getElementById('recordingsList');
-
-        let cameraStream = null, cameraMirrored = true;
-        let currentVideoURL = null;
-        let loopStart = null, loopEnd = null, loopEnabled = false;
-        let isDragging = false;
-        let currentRotate = 0, currentScale = 1.0, isMirrored = false;
-
-        // 录制相关变量
+        
         let mediaRecorder = null;
         let recordedChunks = [];
         let recordingCanvas = null;
@@ -613,6 +377,12 @@
         let isRecording = false;
         let currentRecordingMode = null;
         let audioStream = null;
+
+        let cameraStream = null, cameraMirrored = true;
+        let currentVideoURL = null;
+        let loopStart = null, loopEnd = null, loopEnabled = false;
+        let isDragging = false;
+        let currentRotate = 0, currentScale = 1.0, isMirrored = false;
 
         function getVideoDrawRect(video, targetWidth, targetHeight) {
             if (!video.videoWidth || !video.videoHeight) return { dx: 0, dy: 0, dw: targetWidth, dh: targetHeight };
@@ -633,6 +403,151 @@
             return { dx: offsetX, dy: offsetY, dw: drawWidth, dh: drawHeight };
         }
 
+        function updateRecordButtons(isRecordingMode) {
+            if (isRecordingMode) {
+                if (currentRecordingMode === 'self') {
+                    recordOnlyCamBtn.innerHTML = '⏹️ 停止录制';
+                    recordCompareBtn.disabled = true;
+                } else if (currentRecordingMode === 'compare') {
+                    recordCompareBtn.innerHTML = '⏹️ 停止录制';
+                    recordOnlyCamBtn.disabled = true;
+                }
+                recordingStatusSpan.style.display = 'inline-block';
+            } else {
+                recordOnlyCamBtn.innerHTML = '🎬 录跟跳';
+                recordCompareBtn.innerHTML = '🎥 录对比';
+                recordOnlyCamBtn.disabled = false;
+                recordCompareBtn.disabled = false;
+                recordingStatusSpan.style.display = 'none';
+            }
+        }
+
+        function addRecordingToList(blob, mode) {
+            const url = URL.createObjectURL(blob);
+            const timestamp = new Date().toLocaleTimeString();
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'recording-item';
+            itemDiv.innerHTML = `
+                <video src="${url}" controls></video>
+                <div style="font-size:0.7rem; margin:4px 0;">${mode === 'self' ? '跟跳视频' : '对比视频'} ${timestamp}</div>
+                <button class="btn-sm download-recording">⬇️ 下载</button>
+            `;
+            const downloadBtn = itemDiv.querySelector('.download-recording');
+            downloadBtn.addEventListener('click', () => {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `dance_${mode}_${Date.now()}.webm`;
+                a.click();
+            });
+            recordingsList.prepend(itemDiv);
+        }
+
+        function stopRecordingAndSave() {
+            if (!isRecording) return;
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            if (recordingAnimationId) cancelAnimationFrame(recordingAnimationId);
+            isRecording = false;
+            if (audioStream) {
+                audioStream.getTracks().forEach(t => t.stop());
+                audioStream = null;
+            }
+            if (recordingCanvas) recordingCanvas.remove();
+            updateRecordButtons(false);
+        }
+
+        async function startRecording(mode) {
+            if (!cameraStream) { alert('请先开启摄像头'); return; }
+            if (mode === 'compare' && !danceVideo.src) { alert('请先上传参考视频'); return; }
+            if (isRecording) { stopRecordingAndSave(); return; }
+            
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            let canvasWidth, canvasHeight;
+            if (mode === 'compare') {
+                canvasWidth = 1280;
+                canvasHeight = 720;
+            } else {
+                canvasWidth = 640;
+                canvasHeight = 360;
+            }
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            recordingCanvas = canvas;
+            recordingCtx = ctx;
+            
+            const canvasStream = canvas.captureStream(30);
+            try {
+                audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const audioTrack = audioStream.getAudioTracks()[0];
+                canvasStream.addTrack(audioTrack);
+            } catch(e) { console.warn('无麦克风权限，将无音频', e); }
+            
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(canvasStream, { mimeType: 'video/webm' });
+            mediaRecorder.ondataavailable = (event) => { if (event.data.size > 0) recordedChunks.push(event.data); };
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                addRecordingToList(blob, mode);
+                recordedChunks = [];
+                if (audioStream) { audioStream.getTracks().forEach(t => t.stop()); audioStream = null; }
+            };
+            mediaRecorder.start(100);
+            isRecording = true;
+            currentRecordingMode = mode;
+            updateRecordButtons(true);
+            
+            function drawFrame() {
+                if (!isRecording) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (mode === 'compare') {
+                    const halfWidth = canvas.width / 2;
+                    const height = canvas.height;
+                    if (danceVideo.readyState >= 1) {
+                        const rect = getVideoDrawRect(danceVideo, halfWidth, height);
+                        ctx.drawImage(danceVideo, rect.dx, rect.dy, rect.dw, rect.dh);
+                    }
+                    if (cameraVideo.readyState >= 1) {
+                        ctx.save();
+                        if (cameraMirrored) {
+                            ctx.translate(halfWidth + halfWidth, 0);
+                            ctx.scale(-1, 1);
+                            const rect = getVideoDrawRect(cameraVideo, halfWidth, height);
+                            ctx.drawImage(cameraVideo, rect.dx, rect.dy, rect.dw, rect.dh);
+                        } else {
+                            const rect = getVideoDrawRect(cameraVideo, halfWidth, height);
+                            ctx.drawImage(cameraVideo, halfWidth + rect.dx, rect.dy, rect.dw, rect.dh);
+                        }
+                        ctx.restore();
+                    }
+                    ctx.strokeStyle = '#FF8C42';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(halfWidth, 0);
+                    ctx.lineTo(halfWidth, height);
+                    ctx.stroke();
+                } else {
+                    if (cameraVideo.readyState >= 1) {
+                        ctx.save();
+                        if (cameraMirrored) {
+                            ctx.scale(-1, 1);
+                            ctx.drawImage(cameraVideo, -canvas.width, 0, canvas.width, canvas.height);
+                        } else {
+                            ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
+                        }
+                        ctx.restore();
+                    }
+                }
+                recordingAnimationId = requestAnimationFrame(drawFrame);
+            }
+            drawFrame();
+        }
+        
+        recordOnlyCamBtn.addEventListener('click', () => startRecording('self'));
+        recordCompareBtn.addEventListener('click', () => startRecording('compare'));
+        
+        // 原有函数定义
         function updateLoopButtonText() { toggleLoopBtn.textContent = loopEnabled ? "循环已开" : "循环已关"; }
         function updatePlayPauseIcon() { playPauseBtn.textContent = danceVideo.paused ? "▶" : "⏸"; }
         function updateVideoTransform() { let transform = `scale(${currentScale}) rotate(${currentRotate}deg)`; if (isMirrored) transform += ` scaleX(-1)`; danceVideo.style.transform = transform; }
@@ -662,90 +577,6 @@
         function togglePlayPause() { if (!danceVideo.src) return alert('请先上传视频'); danceVideo.paused ? danceVideo.play() : danceVideo.pause(); updatePlayPauseIcon(); }
         function restartVideo() { if (!danceVideo.src) return; danceVideo.currentTime = 0; danceVideo.play(); updatePlayPauseIcon(); }
 
-        // 录制功能
-        function updateRecordButtons(isRecordingMode) {
-            if (isRecordingMode) {
-                if (currentRecordingMode === 'self') {
-                    recordOnlyCamBtn.innerHTML = '⏹️ 停止录制';
-                    recordCompareBtn.disabled = true;
-                } else if (currentRecordingMode === 'compare') {
-                    recordCompareBtn.innerHTML = '⏹️ 停止录制';
-                    recordOnlyCamBtn.disabled = true;
-                }
-                recordingStatusSpan.style.display = 'inline-block';
-            } else {
-                recordOnlyCamBtn.innerHTML = '🎬 录跟跳';
-                recordCompareBtn.innerHTML = '🎥 录对比';
-                recordOnlyCamBtn.disabled = false;
-                recordCompareBtn.disabled = false;
-                recordingStatusSpan.style.display = 'none';
-            }
-        }
-        function addRecordingToList(blob, mode) {
-            const url = URL.createObjectURL(blob);
-            const timestamp = new Date().toLocaleTimeString();
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'recording-item';
-            itemDiv.innerHTML = `<video src="${url}" controls></video><div style="font-size:0.7rem; margin:4px 0;">${mode === 'self' ? '跟跳视频' : '对比视频'} ${timestamp}</div><button class="btn-sm download-recording">⬇️ 下载</button>`;
-            const downloadBtn = itemDiv.querySelector('.download-recording');
-            downloadBtn.addEventListener('click', () => { const a = document.createElement('a'); a.href = url; a.download = `dance_${mode}_${Date.now()}.webm`; a.click(); });
-            recordingsList.prepend(itemDiv);
-        }
-        function stopRecordingAndSave() {
-            if (!isRecording) return;
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-            if (recordingAnimationId) cancelAnimationFrame(recordingAnimationId);
-            isRecording = false;
-            if (audioStream) { audioStream.getTracks().forEach(t => t.stop()); audioStream = null; }
-            if (recordingCanvas) recordingCanvas.remove();
-            updateRecordButtons(false);
-        }
-        async function startRecording(mode) {
-            if (!cameraStream) { alert('请先开启摄像头'); return; }
-            if (mode === 'compare' && !danceVideo.src) { alert('请先上传参考视频'); return; }
-            if (isRecording) { stopRecordingAndSave(); return; }
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            let canvasWidth, canvasHeight;
-            if (mode === 'compare') { canvasWidth = 1280; canvasHeight = 720; } else { canvasWidth = 640; canvasHeight = 360; }
-            canvas.width = canvasWidth; canvas.height = canvasHeight;
-            recordingCanvas = canvas; recordingCtx = ctx;
-            const canvasStream = canvas.captureStream(30);
-            try { audioStream = await navigator.mediaDevices.getUserMedia({ audio: true }); const audioTrack = audioStream.getAudioTracks()[0]; canvasStream.addTrack(audioTrack); } catch(e) { console.warn('无麦克风权限'); }
-            recordedChunks = [];
-            mediaRecorder = new MediaRecorder(canvasStream, { mimeType: 'video/webm' });
-            mediaRecorder.ondataavailable = (event) => { if (event.data.size > 0) recordedChunks.push(event.data); };
-            mediaRecorder.onstop = () => { const blob = new Blob(recordedChunks, { type: 'video/webm' }); addRecordingToList(blob, mode); recordedChunks = []; if (audioStream) { audioStream.getTracks().forEach(t => t.stop()); audioStream = null; } };
-            mediaRecorder.start(100);
-            isRecording = true; currentRecordingMode = mode; updateRecordButtons(true);
-            function drawFrame() {
-                if (!isRecording) return;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                if (mode === 'compare') {
-                    const halfWidth = canvas.width / 2;
-                    const height = canvas.height;
-                    if (danceVideo.readyState >= 1) { const rect = getVideoDrawRect(danceVideo, halfWidth, height); ctx.drawImage(danceVideo, rect.dx, rect.dy, rect.dw, rect.dh); }
-                    if (cameraVideo.readyState >= 1) {
-                        ctx.save();
-                        if (cameraMirrored) { ctx.translate(halfWidth + halfWidth, 0); ctx.scale(-1, 1); const rect = getVideoDrawRect(cameraVideo, halfWidth, height); ctx.drawImage(cameraVideo, rect.dx, rect.dy, rect.dw, rect.dh); }
-                        else { const rect = getVideoDrawRect(cameraVideo, halfWidth, height); ctx.drawImage(cameraVideo, halfWidth + rect.dx, rect.dy, rect.dw, rect.dh); }
-                        ctx.restore();
-                    }
-                    ctx.strokeStyle = '#FF8C42'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(halfWidth, 0); ctx.lineTo(halfWidth, height); ctx.stroke();
-                } else {
-                    if (cameraVideo.readyState >= 1) {
-                        ctx.save();
-                        if (cameraMirrored) { ctx.scale(-1, 1); ctx.drawImage(cameraVideo, -canvas.width, 0, canvas.width, canvas.height); }
-                        else { ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height); }
-                        ctx.restore();
-                    }
-                }
-                recordingAnimationId = requestAnimationFrame(drawFrame);
-            }
-            drawFrame();
-        }
-
-        // 事件绑定
         videoUpload.addEventListener('change', e => e.target.files[0] && handleVideoUpload(e.target.files[0]));
         speedSlider.addEventListener('input', updateSpeed);
         volumeSlider.addEventListener('input', updateVolume);
@@ -769,16 +600,11 @@
         enableCameraBtn.addEventListener('click', enableCamera);
         disableCameraBtn.addEventListener('click', disableCamera);
         mirrorCameraBtn.addEventListener('click', toggleCameraMirror);
-        recordOnlyCamBtn.addEventListener('click', () => startRecording('self'));
-        recordCompareBtn.addEventListener('click', () => startRecording('compare'));
-
-        window.disableCamera = disableCamera;
+        
         window.addEventListener('beforeunload', () => { if (isRecording) stopRecordingAndSave(); if (cameraStream) cameraStream.getTracks().forEach(t => t.stop()); if (currentVideoURL) URL.revokeObjectURL(currentVideoURL); });
+        
         updateVideoTransform(); updateLoopButtonText(); updatePlayPauseIcon();
     })();
-
-    // 启动会员检查
-    checkUserStatus().catch(console.error);
 </script>
 </body>
 </html>
